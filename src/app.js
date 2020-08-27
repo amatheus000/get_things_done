@@ -55,6 +55,35 @@ const App = () => {
     }
   };
 
+
+  const handleEditForm = async (taskId) => {
+    const url = `/tasks/${taskId}`;
+    const response = await fetch(url, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({ description: taskDescription }),
+    });
+
+    const Task = await response.json();
+    setTasks([newTask, ...tasks]);
+    setTaskDescription("");
+    setIsModalOpen(false);
+
+    const updatedDescriptionTask = await response.json();
+    const updatedDescriptionTasks = tasks.map((task) => {
+      if (task.id === taskId) {
+        return updatedDescriptionTask;
+      } else {
+        return task;
+      }
+    });
+    setTasks(updatedTasks);
+  };
+
+
   const handleCheckboxClick = async (taskId, isCompleted) => {
     const url = `/tasks/${taskId}`;
     const response = await fetch(url, {
@@ -106,7 +135,9 @@ const App = () => {
               completed={task.completed}
               handleDeleteClick={() => handleDeleteClick(task.id)}
               handleCheckboxClick={() =>
-                handleCheckboxClick(task.id, task.completed)
+                handleCheckboxClick(task.id, task.completed)}
+              handleEditForm={() =>
+                handleEditForm(task.id, task.description)
               }
             />
           ))}
